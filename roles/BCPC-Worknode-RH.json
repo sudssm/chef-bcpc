@@ -13,8 +13,8 @@
       "recipe[bcpc-centos::selinux]",
       "recipe[bcpc-centos::packagekit]",
       "recipe[bcpc-centos::networking]",
-      "recipe[bcpc::ceph-common]",
-      "recipe[bcpc::ceph-work]"
+      "recipe[bcpc::ceph-work]",
+      "recipe[bcpc::nova-work]"
     ],
     "description": "A functional compute node in a BCPC cluster (RH-variant)",
     "chef_type": "role",

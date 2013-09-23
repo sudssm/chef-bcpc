@@ -19,21 +19,24 @@
 
 include_recipe "bcpc::default"
 
-package "ubuntu-cloud-keyring" do
-    action :upgrade
+case node['platform']
+when "centos","redhat","fedora","suse"
+  include_recipe "bcpc::openstack-yum"
+  common_pkg_name="openstack-nova-common"
+when "debian","ubuntu"
+  include_recipe "bcpc::openstack-apt"
+  common_pkg_name="nova-common"
 end
 
-apt_repository "openstack" do
-    uri node['bcpc']['repos']['openstack']
-    distribution "#{node['lsb']['codename']}-#{node['bcpc']['openstack_branch']}/#{node['bcpc']['openstack_release']}"
-    components ["main"]
+package common_pkg_name do
+  action :upgrade
 end
 
-%w{python-novaclient python-cinderclient python-glanceclient nova-common python-nova
-   python-keystoneclient python-nova-adminclient python-mysqldb}.each do |pkg|
-        package pkg do
-            action :upgrade
-        end
+%w{python-novaclient python-cinderclient python-glanceclient python-nova
+   python-keystoneclient python-nova-adminclient}.each do |pkg|
+   package pkg do
+     action :upgrade
+   end
 end
 
 template "/usr/local/bin/hup_openstack" do

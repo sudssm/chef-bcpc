@@ -84,7 +84,11 @@ listen_addr = "<%="#{node[:bcpc][:management][:ip]}"%>"
 # without becoming root.
 #
 # This is restricted to 'root' by default.
+<% if node['platform'] == "ubuntu" -%>
 unix_sock_group = "libvirtd"
+<% else -%>
+unix_sock_group = "qemu"
+<% end -%>
 
 # Set the UNIX socket permissions for the R/O socket. This is used
 # for monitoring VM status only
