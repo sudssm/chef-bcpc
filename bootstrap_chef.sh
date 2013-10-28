@@ -67,10 +67,19 @@ else
   $SSH_CMD "rsync $RSYNCEXTRA -avP --exclude vbox --exclude .chef /chef-bcpc-host/ /home/vagrant/chef-bcpc/"
 fi
 
+echo "Installing supplemental packages"
+$SSH_CMD "cd $BCPC_DIR && sudo ./install-base.sh"
+
 echo "Setting up chef server"
 $SSH_CMD "cd $BCPC_DIR && sudo ./setup_chef_server.sh"
+
 echo "Setting up chef cookbooks"
 $SSH_CMD "cd $BCPC_DIR && ./setup_chef_cookbooks.sh ${IP} ${SSH_USER}"
+
+# if re-running from this point, the following is required (i.e. if we
+# are not rerunning setup_chef_server.sh and setup_chef_cookbooks.sh
+$SSH_CMD "sudo chmod a+r /etc/chef/validation.pem"
+
 echo "Setting up chef environment, roles, and uploading cookbooks"
 $SSH_CMD "cd $BCPC_DIR && knife environment from file environments/${CHEF_ENVIRONMENT}.json && knife role from file roles/*.json && knife cookbook upload -a -o cookbooks"
 echo "Enrolling local bootstrap node into chef"

@@ -15,18 +15,25 @@ if [[ -z "$CURL" ]]; then
   exit
 fi
 
+#BOOTSTRAP_ISO='ubuntu-12.04-mini.iso'
+BOOTSTRAP_ISO='ubuntu-12.04.2-server-amd64.iso'
+
 VBM=VBoxManage
 
 # Use this if you intend to make an apt-mirror in this VM (see the
 #instructions on using an apt-mirror towards the end of bootstrap.md)
-#BOOTSTRAP_DRIVE_SIZE=120480
+BOOTSTRAP_DRIVE_SIZE=120480
 
-BOOTSTRAP_DRIVE_SIZE=20480
+#BOOTSTRAP_DRIVE_SIZE=20480
 DRIVE_SIZE=20480
 
 DIR=`dirname $0`/vbox
 
 pushd $DIR
+
+
+$VBM hostonlyif ipconfig vboxnet0 --ip 10.0.100.2 --netmask 255.255.255.0
+
 
 P=`python -c "import os.path; print os.path.abspath('./')"`
 
@@ -141,8 +148,9 @@ else
         $VBM modifyvm $vm --nic3 hostonly --hostonlyadapter3 "$VBN1"
         $VBM modifyvm $vm --nic4 hostonly --hostonlyadapter4 "$VBN2"
         # Add the bootable mini ISO for installing Ubuntu 12.04
-        $VBM storageattach $vm --storagectl "IDE Controller" --device 0 --port 0 --type dvddrive --medium ubuntu-12.04-mini.iso
+        $VBM storageattach $vm --storagectl "IDE Controller" --device 0 --port 0 --type dvddrive --medium "$BOOTSTRAP_ISO"
         $VBM modifyvm $vm --boot1 disk
+		$VBM startvm bcpc-bootstrap &
     fi
   done
 fi
