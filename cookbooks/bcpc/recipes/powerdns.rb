@@ -252,15 +252,14 @@ ruby_block "powerdns-table-records_reverse-view" do
     end
 end
 
-
-ruby_block "powerdns-table-records-view" do
+ruby_block "powerdns-table-records-unified-view" do
 
     block do
-        system "mysql -uroot -p#{get_config('mysql-root-password')} -e 'SELECT TABLE_NAME FROM INFORMATION_SCHEMA.VIEWS WHERE TABLE_SCHEMA = \"#{node[:bcpc][:pdns_dbname]}\" AND TABLE_NAME=\"records\"' | grep -q \"records\""
+        system "mysql -uroot -p#{get_config('mysql-root-password')} -e 'SELECT TABLE_NAME FROM INFORMATION_SCHEMA.VIEWS WHERE TABLE_SCHEMA = \"#{node[:bcpc][:pdns_dbname]}\" AND TABLE_NAME=\"records_unified\"' | grep -q \"records_unified\""
         if not $?.success? then
 
             %x[ mysql -uroot -p#{get_config('mysql-root-password')} #{node[:bcpc][:pdns_dbname]} <<-EOH
-              create or replace view records as
+              create or replace view records_unified as
                 select id, domain_id, name, type, content, ttl, prio, change_date from records_forward
                 union all
                 select id, domain_id, name, type, content, ttl, prio, change_date from records_reverse;
@@ -274,6 +273,31 @@ ruby_block "powerdns-table-records-view" do
 
 end
 
+ruby_block "powerdns-procedure-sp_refresh_records" do
+
+    block do
+        system "mysql -uroot -p#{get_config('mysql-root-password')} -e 'SELECT ROUTINE_NAME FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE=\"PROCEDURE\" AND TABLE_SCHEMA = \"#{node[:bcpc][:pdns_dbname]}\" AND ROUTINE_NAME=\"sp_refresh_records\"' | grep -q \"sp_refresh_records\""
+        if not $?.success? then
+
+            %x[ mysql -uroot -p#{get_config('mysql-root-password')} #{node[:bcpc][:pdns_dbname]} <<-EOH
+              DROP PROCEDURE IF EXISTS sp_refresh_records;
+              delimiter //
+              CREATE PROCEDURE sp_refresh_records ()
+              BEGIN
+                DROP TABLE IF EXISTS records_old;
+                DROP TABLE IF EXISTS records_temp;
+                CREATE TABLE records_temp AS SELECT * FROM records_unified ORDER BY name;
+                RENAME TABLE records TO records_old, records_temp TO records;
+              END//
+            ]
+
+            self.notifies :restart, "service[pdns]", :delayed
+            self.resolve_notification_references
+        end
+
+    end
+
+end
 get_all_nodes.each do |server|
     ruby_block "create-dns-entry-#{server['hostname']}" do
         block do
