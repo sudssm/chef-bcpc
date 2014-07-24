@@ -255,6 +255,19 @@ bash "keystone-service-catalog-quantum" do
     only_if ". /root/keystonerc; keystone service-get quantum 2>&1 | grep -e '^No service'"
 end
 
+bash "keystone-service-catalog-sahara" do
+    user "root"
+    code <<-EOH
+        . /root/keystonerc
+        export SAHARA_ID=`keystone service-create --name=sahara --type=data_processing --description="Sahara Data Processing" | grep " id " | awk '{print $4}'`
+        keystone endpoint-create --region #{node['bcpc']['region_name']} --service_id $SAHARA_ID \
+            --publicurl   "http://#{node['bcpc']['management']['vip']}:8386/v1.1/%(tenant_id)s" \
+            --adminurl    "http://#{node['bcpc']['management']['vip']}:8386/v1.1/%(tenant_id)s" \
+            --internalurl "http://#{node['bcpc']['management']['vip']}:8386/v1.1/%(tenant_id)s"
+    EOH
+    only_if ". /root/keystonerc; keystone service-get sahara 2>&1 | grep -e '^No service'"
+end
+
 bash "keystone-create-users-tenants" do
     user "root"
     code <<-EOH

@@ -147,6 +147,7 @@ default['bcpc']['ceilometer_dbname'] = "ceilometer"
 default['bcpc']['graphite_dbname'] = "graphite"
 default['bcpc']['pdns_dbname'] = "pdns"
 default['bcpc']['zabbix_dbname'] = "zabbix"
+default['bcpc']['sahara_dbname'] = "sahara"
 
 default['bcpc']['admin_tenant'] = "AdminTenant"
 default['bcpc']['admin_role'] = "Admin"
