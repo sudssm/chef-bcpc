@@ -175,12 +175,12 @@ end
 bash "sahara-database-creation" do
     code <<-EOH
          mysql -uroot -p#{get_config('mysql-root-password')} -e "
-                CREATE DATABASE #{node['bcpc']['sahara_dbname']};
-                GRANT ALL ON #{node['bcpc']['sahara_dbname']}.* TO '#{get_config('mysql-sahara-user')}'@'%' IDENTIFIED BY '#{get_config('mysql-sahara-password')}';
-                GRANT ALL ON #{node['bcpc']['sahara_dbname']}.* TO '#{get_config('mysql-sahara-user')}'@'localhost' IDENTIFIED BY '#{get_config('mysql-sahara-password')}';
+                CREATE DATABASE #{node['bcpc']['dbname']['sahara']};
+                GRANT ALL ON #{node['bcpc']['dbname']['sahara']}.* TO '#{get_config('mysql-sahara-user')}'@'%' IDENTIFIED BY '#{get_config('mysql-sahara-password')}';
+                GRANT ALL ON #{node['bcpc']['dbname']['sahara']}.* TO '#{get_config('mysql-sahara-user')}'@'localhost' IDENTIFIED BY '#{get_config('mysql-sahara-password')}';
                 FLUSH PRIVILEGES;"
          EOH
-    not_if "mysql -uroot -p#{get_config('mysql-root-password')} -e 'SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = \"#{node['bcpc']['sahara_dbname']}\"'|grep \"#{node['bcpc']['sahara_dbname']}\""
+    not_if "mysql -uroot -p#{get_config('mysql-root-password')} -e 'SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = \"#{node['bcpc']['dbname']['sahara']}\"'|grep \"#{node['bcpc']['dbname']['sahara']}\""
     notifies :run, "bash[sahara-database-sync]", :immediately
 end
 
