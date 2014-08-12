@@ -354,7 +354,7 @@ log_file = /var/log/sahara/sahara.log
 # Deprecated group/name - [DEFAULT]/sql_connection
 # Deprecated group/name - [DATABASE]/sql_connection
 # Deprecated group/name - [sql]/connection
-connection=mysql://<%=get_config('mysql-sahara-user')%>:<%=get_config('mysql-sahara-password')%>@<%=node['bcpc']['management']['vip']%>/<%=node['bcpc']['sahara_dbname']%>
+connection=mysql://<%=get_config('mysql-sahara-user')%>:<%=get_config('mysql-sahara-password')%>@<%=node['bcpc']['management']['vip']%>/<%=node['bcpc']['dbname']['sahara']%>
 
 
 # The SQLAlchemy connection string used to connect to the
