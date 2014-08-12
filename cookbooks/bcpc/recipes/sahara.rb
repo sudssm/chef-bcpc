@@ -44,12 +44,34 @@ end
     end
 end
 
-%w{sahara_main.py.patch sahara_utils_openstack_nova.py.patch sahara_shell.py.patch sahara_api_client.py.patch}.each do |file|
+%w{keystone_catalog_backends_templated.py.patch 
+   sahara_main.py.patch
+   sahara_utils_openstack_nova.py.patch
+   sahara_shell.py.patch
+   sahara_api_client.py.patch }.each do |file|
     cookbook_file "/tmp/#{file}" do
         source file
         owner "root"
         mode 00644
     end
+end
+
+# patch keystone endpoint template parser
+# intended to patch https://github.com/openstack/keystone/blob/a96158a2dbec620c69c71c37248a5729982e050d/keystone/catalog/backends/templated.py
+bash "patch-for-keystone-catalog-backends-templated" do
+    user "root"
+    cwd "/usr/lib/python2.7/dist-packages/keystone/catalog/backends/"
+    code <<-EOH
+         md5=($(md5sum templated.py))
+         if [ "$md5" == "5ea04d6a4c8b9d3d4bba181291a84f4e" ]; then
+           patch templated.py < /tmp/keystone_catalog_backends_templated.py.patch
+         else
+           echo "Upstream has changed; can't patch."
+           exit 2
+         fi
+    EOH
+    notifies :restart, "service[keystone]", :immediately
+    not_if {Digest::MD5.file('/usr/lib/python2.7/dist-packages/keystone/catalog/backends/templated.py').hexdigest == "94b934b005f42519da4b2cbb3cadbd20"}
 end
 
 # patch server

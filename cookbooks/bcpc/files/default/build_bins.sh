@@ -191,7 +191,7 @@ PIPDIR="pip-packages"
 if [ ! -e $PIPDIR ]; then
     mkdir $PIPDIR
 fi
-for package in requests-aws==0.1.5 http://tarballs.openstack.org/sahara/sahara-stable-icehouse.tar.gz sahara-dashboard python-saharaclient; do
+for package in requests-aws==0.1.5 "httplib2>=0.7.5" http://tarballs.openstack.org/sahara/sahara-stable-icehouse.tar.gz sahara-dashboard python-saharaclient; do
     pip --cert cacert.pem install --no-use-wheel --upgrade -d $PIPDIR $package
 done
 FILES="$PIPDIR $FILES"
