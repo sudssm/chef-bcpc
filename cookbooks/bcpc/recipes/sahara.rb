@@ -58,6 +58,7 @@ end
 
 # patch keystone endpoint template parser
 # intended to patch https://github.com/openstack/keystone/blob/a96158a2dbec620c69c71c37248a5729982e050d/keystone/catalog/backends/templated.py
+# fixes problem described here https://bugs.launchpad.net/sahara/+bug/1356053 -- fix made in Juno
 bash "patch-for-keystone-catalog-backends-templated" do
     user "root"
     cwd "/usr/lib/python2.7/dist-packages/keystone/catalog/backends/"
