@@ -241,4 +241,5 @@ if node['bcpc']['enabled']['monitoring'] then
         group "root"
         mode "00755"
     end
+
 end
