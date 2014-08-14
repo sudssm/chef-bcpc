@@ -195,6 +195,19 @@ service "sahara" do
     restart_command "service sahara restart; sleep 5"
 end
 
+# Open the hadoop-required ports in the default security group
+# In Juno, Sahara allows user to choose a security group in node-group-template; but not in Icehouse
+bash "default-secgroup-enable-hadoop" do
+    user "root"
+    code <<-EOH
+        . /root/adminrc
+        for i in 8020 8021 50010 50020 50030 50060 50070 50075 ; do
+            nova secgroup-add-rule default tcp $i $i 0.0.0.0/0
+        done
+    EOH
+    not_if ". /root/adminrc; nova secgroup-list-rules default | grep 8020"
+end
+
 bash "sahara-database-creation" do
     code <<-EOH
          mysql -uroot -p#{get_config('mysql-root-password')} -e "
