@@ -201,7 +201,7 @@ bash "default-secgroup-enable-hadoop" do
     user "root"
     code <<-EOH
         . /root/adminrc
-        for i in 8020 8021 50010 50020 50030 50060 50070 50075 ; do
+        for i in 8020 8021 11000 50010 50020 50030 50060 50070 50075 ; do
             nova secgroup-add-rule default tcp $i $i 0.0.0.0/0
         done
     EOH
