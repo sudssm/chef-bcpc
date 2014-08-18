@@ -228,7 +228,7 @@ bash "sahara-database-sync" do
 end
 
 # convert and upload sahara images
-# If behind a proxy, put sahara image in /var/www of bootstrap node (or scp to headnode), and modify node['bcpc']['sahara']['vanillaimg_location']
+# If behind a proxy, put sahara image in /var/www of bootstrap node (or scp to headnode), and modify node['bcpc']['sahara']['vanilla_img_location']
 remote_file "/tmp/sahara-icehouse-vanilla.qcow2" do
     source "#{node['bcpc']['sahara']['vanilla_img_location']}"
     owner "root"
