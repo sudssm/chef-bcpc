@@ -192,11 +192,12 @@ if [ ! -e $PIPDIR ]; then
     mkdir $PIPDIR
 fi
 
-if [[ -z "$1" ]]; then
-    echo "Not using a pip cert file. If behind a MITM proxy, run \"$0 <cert file (absolute path or relative to $0)>\""
-else
-    cert=$1
+cert="cacert.pem"
+if [[ -e $cert ]]; then
     echo "Using $cert as pip cert file"
+else
+    cert=""
+    echo "Not using a pip cert file. If behind a MITM proxy, put a cacert.pem in `pwd`"
 fi
 for package in requests-aws==0.1.5 "httplib2>=0.7.5" http://tarballs.openstack.org/sahara/sahara-stable-icehouse.tar.gz sahara-dashboard python-saharaclient; do
     if [[ -z "$cert" ]]; then
