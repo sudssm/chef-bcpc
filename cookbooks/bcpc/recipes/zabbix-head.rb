@@ -231,7 +231,7 @@ if node['bcpc']['enabled']['monitoring'] then
     end
 
     python_pip "requests==aws-0.1.5" do
-        action :upgrade
+        action :install
         options "--no-index --find-links file://#{node["chef_client"]["cache_path"]}/pip-packages/"
     end
 
