@@ -193,16 +193,27 @@ if [ ! -e $PIPDIR ]; then
 fi
 
 cert="cacert.pem"
-if [[ -e $cert ]]; then
+if [ -e $cert ]; then
     echo "Using $cert as pip cert file"
     cert="--cert $cert"
 else
     echo "Not using a pip cert file. If behind a MITM proxy, put a $cert in `pwd`"
     cert=""
 fi
-for package in requests-aws==0.1.5 "httplib2>=0.7.5" http://tarballs.openstack.org/sahara/sahara-stable-icehouse.tar.gz sahara-dashboard python-saharaclient; do
-    pip $cert install --no-use-wheel --upgrade -d $PIPDIR $package
+
+# provide package name and optional exact version, or package url
+for package in requests-aws==0.1.5 httplib2==0.9 http://tarballs.openstack.org/sahara/sahara-stable-icehouse.tar.gz sahara-dashboard python-saharaclient; do
+    # check if url
+    if [[ $package == *.tar.gz ]]; then
+        filename=`echo $package | sed 's/.*\///'`
+    else
+        filename=`echo $package | sed 's/==/-/'`*.tar.gz
+    fi
+
+    if [ ! -e $(echo $PIPDIR/$filename) ]; then
+        pip $cert install --no-use-wheel --upgrade -d $PIPDIR $package
+    fi
 done
-FILES="$PIPDIR $FILES"
+FILES="`ls $PIPDIR/* | tr '\n' ' '` $FILES"
 
 popd
