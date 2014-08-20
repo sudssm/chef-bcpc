@@ -37,7 +37,7 @@ remote_directory "#{node["chef_client"]["cache_path"]}/pip-packages" do
     source "bins/pip-packages"
 end
 
-%w{pbr sahara==stable-icehouse sahara-dashboard python-saharaclient}.each do |pkg|
+%w{pbr sahara==stable-icehouse sahara-dashboard python-saharaclient==0.7.0}.each do |pkg|
     python_pip pkg do
         action :install
         options "--no-index --find-links file://#{node["chef_client"]["cache_path"]}/pip-packages"

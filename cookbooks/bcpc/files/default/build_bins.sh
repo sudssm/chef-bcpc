@@ -202,7 +202,7 @@ else
 fi
 
 # provide package name and optional exact version, or package url
-for package in requests-aws==0.1.5 httplib2==0.9 http://tarballs.openstack.org/sahara/sahara-stable-icehouse.tar.gz sahara-dashboard python-saharaclient; do
+for package in requests-aws==0.1.5 httplib2==0.9 http://tarballs.openstack.org/sahara/sahara-stable-icehouse.tar.gz sahara-dashboard python-saharaclient==0.7.0; do
     # check if url
     if [[ $package == *.tar.gz ]]; then
         filename=`echo $package | sed 's/.*\///'`
