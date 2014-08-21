@@ -44,6 +44,12 @@ end
     end
 end
 
+# sahara requires updated version of oslo.config
+python_pip "oslo.config" do
+    action :upgrade
+    options "--no-index --find-links file://#{node["chef_client"]["cache_path"]}/pip-packages"
+end
+
 %w{keystone_catalog_backends_templated.py.patch 
    sahara_main.py.patch
    sahara_utils_openstack_nova.py.patch
